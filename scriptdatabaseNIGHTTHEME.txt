@@ -1,0 +1,69 @@
+
+CREATE DATABASE IF NOT EXISTS MelomaneRecordz_DLT_VERSION_BETA;
+USE MelomaneRecordz_DLT_VERSION_BETA;
+
+CREATE TABLE Musicien (
+NIF_mus BIGINT(10) NOT NULL,
+nom_mus VARCHAR(40) NOT NULL,
+prenom_mus VARCHAR(40) NOT NULL,
+adresse_mus VARCHAR(40),
+phone_mus VARCHAR(30),
+date_enr_mus TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+image_mus LONGBLOB,
+PRIMARY KEY pkmusicien (NIF_mus)
+)
+ENGINE=INNODB DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE Instrument (
+id_inst INT(10) NOT NULL AUTO_INCREMENT,
+nom_inst ENUM('Assòtò','Banjo','Flute','Guitare','Piano','Synthé'),
+date_acqui DATE NOT NULL,
+date_enr_inst TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY pkinstrument (id_inst)
+);
+
+CREATE TABLE Album (
+id_alb INT NOT NULL AUTO_INCREMENT,
+titre_alb VARCHAR(40) NOT NULL,
+format_alb ENUM('Cassette','CD','MP3','Vinyle'),
+date_lanc DATE,
+NIF_mus BIGINT(10) NOT NULL,
+date_enr_alb TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+image_alb LONGBLOB,
+PRIMARY KEY pkalbum (id_alb),
+ CONSTRAINT FOREIGN KEY fkmusicien_album (NIF_mus) REFERENCES Musicien (NIF_mus)
+);
+
+
+CREATE TABLE Chanson (
+id_chan INT NOT NULL AUTO_INCREMENT,
+titre_chan VARCHAR(40) NOT NULL,
+auteur_chan VARCHAR(40) NOT NULL,
+duree_chan TIME NOT NULL,
+id_alb INT,
+date_enr_chan TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+image_chan LONGBLOB,
+PRIMARY KEY pkchanson (id_chan),
+CONSTRAINT FOREIGN KEY fkalbum_chanson (id_alb) REFERENCES Album (id_alb)
+);
+
+
+CREATE TABLE Play (
+id_play INT NOT NULL AUTO_INCREMENT,
+NIF_mus_play BIGINT(10) NOT NULL,
+id_chan_play INT NOT NULL,
+PRIMARY KEY pkplay (id_play),
+CONSTRAINT FOREIGN KEY fkmusicien_play (NIF_mus_play) REFERENCES Musicien (NIF_mus),
+CONSTRAINT FOREIGN KEY fkchanson_play (id_chan_play) REFERENCES Chanson (id_chan)
+);
+
+
+CREATE TABLE Jouer (
+id_jouer INT NOT NULL AUTO_INCREMENT,
+NIF_mus_jouer  BIGINT(10) NOT NULL,
+id_inst_jouer INT NOT NULL,
+PRIMARY KEY pkjouer (id_jouer),
+CONSTRAINT FOREIGN KEY fkmusicien_jouer (NIF_mus_jouer) REFERENCES Musicien (NIF_mus),
+CONSTRAINT FOREIGN KEY fkinstrument_jouer (id_inst_jouer) REFERENCES Instrument (id_inst)
+);
